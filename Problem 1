@@ -1,0 +1,52 @@
+import pandas as pd
+
+#-------------------------------
+# Your code goes here.
+# Add as many cells as you need
+#-------------------------------
+# build a Dataframe of users'information and display it in table format
+unames = ['user_id', 'gender', 'age', 'occupation', 'zip'] 
+users = pd.read_table('/Users/Stefan/Downloads/ml-1m/users.dat', sep='::', header=None,names=unames)
+
+#create a Dataframe of ratings'information and display it in table format
+rnames = ['user_id', 'movie_id', 'rating', 'timestamp']
+ratings = pd.read_table('/Users/Stefan/Downloads/ml-1m/ratings.dat', sep='::', header=None,names=rnames)
+
+#create a Dataframe of movies'information and display it in table format
+mnames = ['movie_id', 'title', 'genres']
+movies = pd.read_table('/Users/Stefan/Downloads/ml-1m/movies.dat', sep='::', header=None,names=mnames)
+
+#merge those 3 tables into one complete table
+data= pd.merge(pd.merge(ratings,users),movies)
+
+#How many movies have an average rating over 4.5 overall?
+mean_ratings =data.pivot_table('rating',rows='title',aggfunc='mean')
+for i in range(3706):
+    if(mean_ratings[i]>4.5):
+        print mean_ratings.index[i]+' '+str(mean_ratings[i])
+
+#How many movies have an average rating over 4.5 among men?
+mean_rating =data.pivot_table('rating',rows='title',cols='gender',aggfunc='mean')
+print mean_rating
+for i in range(3706):
+    if(mean_rating['M'][i]>4.5):
+        print mean_rating.index[i]+' '+str(mean_rating['M'][i])
+        
+#How many movies have an average rating over 4.5 among women?      
+for i in range(3706):
+    if(mean_rating['F'][i]>4.5):
+        print mean_rating.index[i]+' '+str(mean_rating['F'][i])
+        
+
+
+
+#How many movies have an median rating over 4.5 among men over age 30
+men_data=data[(data.gender=='M')&(data.age>=30)]
+men =data.pivot_table('rating',rows='title',aggfunc='median')
+for i in range(3706):
+    if(men[i]>=4.5):
+        print men.index[i]+' '+str(men[i])
+
+
+
+
